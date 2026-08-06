@@ -376,6 +376,7 @@ export class ArtifactManager {
 	async allocatePath(toolType: string): Promise<{ id: string; path?: string }> {
 		await this.#ensureDir();
 		const id = String(await this.#claimNextId());
+		this.#allocatedIds.add(id);
 		if (this.#store) return { id };
 		return { id, path: path.join(this.#dir, this.#filename(id, toolType)) };
 	}
@@ -388,6 +389,7 @@ export class ArtifactManager {
 	async save(content: string, toolType: string, options: ArtifactSaveOptions = {}): Promise<string> {
 		await this.#ensureDir();
 		const id = String(await this.#claimNextId());
+		this.#allocatedIds.add(id);
 		const maxBytes = Math.max(0, options.maxBytes ?? DEFAULT_ARTIFACT_MAX_BYTES);
 		const contentBytes = Buffer.byteLength(content, "utf-8");
 		const published =
@@ -486,6 +488,7 @@ export class ArtifactManager {
 		try {
 			await options?.beforePublish?.(frozenMap);
 			for (const filename of await staging.listFiles()) {
+				if (/^\.artifact-id-\d+$/.test(filename)) continue;
 				const bytes = staging.#store
 					? staging.#store.readExpected(filename)?.bytes
 					: await fs.readFile(path.join(staging.#dir, filename));

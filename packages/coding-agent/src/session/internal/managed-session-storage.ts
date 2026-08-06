@@ -1529,7 +1529,7 @@ export class ManagedSessionDescendantStore {
 		const source = this.readExpected(sourceRelativePath);
 		if (
 			!source ||
-			!sameStableIdentityIgnoringCtime(source.identity, expected.identity) ||
+			!sameReplacementIdentity(source.identity, expected.identity) ||
 			source.identity.sha256 !== expected.identity.sha256 ||
 			!source.bytes.equals(expected.bytes)
 		)
@@ -1554,7 +1554,7 @@ export class ManagedSessionDescendantStore {
 		const movedSnapshot = this.readExpected(destinationRelativePath);
 		if (
 			!movedSnapshot ||
-			!sameStableIdentityIgnoringCtime(movedSnapshot.identity, expected.identity) ||
+			!sameReplacementIdentity(movedSnapshot.identity, expected.identity) ||
 			movedSnapshot.identity.sha256 !== expected.identity.sha256 ||
 			!movedSnapshot.bytes.equals(expected.bytes)
 		)

@@ -3792,13 +3792,13 @@ export type SettingValue<P extends SettingPath> = Schema[P] extends { type: "boo
 						: never
 					: Schema[P] extends { type: "array"; default: infer D }
 						? D
-: Schema[P] extends { type: "record"; default: infer D }
+						: Schema[P] extends { type: "record"; default: infer D }
 							? D
 							: Schema[P] extends { type: "constrained-record"; default: infer D }
-							? D
-							: Schema[P] extends OptionalObjectDef<infer D>
-								? D | undefined
-								: never;
+								? D
+								: Schema[P] extends OptionalObjectDef<infer D>
+									? D | undefined
+									: never;
 
 /** Get the default value for a setting path */
 export function getDefault<P extends SettingPath>(path: P): SettingValue<P> {
@@ -3903,7 +3903,7 @@ function validSettingValue(definition: (typeof SETTINGS_SCHEMA)[SettingPath], va
 		(definition.type === "enum" &&
 			typeof value === "string" &&
 			(definition.values as readonly string[]).includes(value)) ||
-(definition.type === "array" &&
+		(definition.type === "array" &&
 			validArraySettingValue(value, "items" in definition ? definition.items?.enum : undefined)) ||
 		((definition.type === "record" ||
 			definition.type === "constrained-record" ||
