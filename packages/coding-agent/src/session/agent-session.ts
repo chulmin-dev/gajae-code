@@ -11733,7 +11733,13 @@ export class AgentSession {
 			...DEFAULT_PRUNE_CONFIG,
 			minimumSavings: overThreshold ? 0 : DEFAULT_PRUNE_CONFIG.minimumSavings,
 		});
-		const artifactManager = await this.sessionManager.ensureArtifactManager();
+		const artifactManager = await this.sessionManager.ensureArtifactManager().catch(error => {
+			logger.info("Tool-output artifact manager unavailable; retaining original output", {
+				error: String(error),
+			});
+			return undefined;
+		});
+		if (!artifactManager) return undefined;
 		const published = new Map<string, ToolOutputPruneEvictionHandle>();
 
 		// Publish exact text one candidate at a time. The plan carries only digests and

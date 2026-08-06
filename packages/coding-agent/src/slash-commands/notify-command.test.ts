@@ -19,19 +19,17 @@ function runtimeWithExtension(commandInstalled: boolean) {
 }
 
 describe("/notify SDK-only routing", () => {
-	test("consumes on/off with disabled state when no lazy command is installed", async () => {
+	test("passes on/off through when no lazy command is installed", async () => {
 		const command = lookupBuiltinSlashCommand("notify");
 		if (!command?.handle) throw new Error("notify builtin handler missing");
 		const { runtime, output } = runtimeWithExtension(false);
 		expect(await command.handle({ name: "notify", args: "on", text: "/notify on" }, runtime)).toEqual({
-			consumed: true,
+			prompt: "/notify on",
 		});
-		expect(output[0]).toContain("unavailable");
-		output.length = 0;
 		expect(await command.handle({ name: "notify", args: "off", text: "/notify off" }, runtime)).toEqual({
-			consumed: true,
+			prompt: "/notify off",
 		});
-		expect(output[0]).toContain("already disabled");
+		expect(output).toEqual([]);
 	});
 
 	test("delegates to the registered native/session command when present", async () => {

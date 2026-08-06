@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from "bun:test";
+import { afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { Agent, type AgentContext } from "@gajae-code/agent-core";
@@ -506,7 +506,11 @@ describe("AgentSession mid-run maintenance outcomes", () => {
 		session = await buildSession({ settings: { "compaction.keepRecentTokens": 10 } });
 		const output = "unavailable-output-".repeat(35_000);
 		const toolCallId = await seedPrunableToolConversation(session, output, 1_000);
+		const ensureArtifactManager = spyOn(session.sessionManager, "ensureArtifactManager").mockRejectedValue(
+			new Error("artifact persistence unavailable"),
+		);
 		const outcome = await session.runMidRunMaintenanceForTests(contextOf(session));
+		ensureArtifactManager.mockRestore();
 		expect(outcome).toBe("failed");
 		const entry = session.sessionManager
 			.getBranch()

@@ -136,8 +136,9 @@ describe("issue #970 custom provider discovery", () => {
 		expect(deepseek?.api).toBe("openai-completions");
 		expect(deepseek?.provider).toBe("vllm");
 		expect(deepseek?.name).toBe("deepseek-r1");
-		expect(deepseek?.contextWindow).toBe(128000);
-		expect(deepseek?.maxTokens).toBe(8192);
+		// Discovered models inherit exact bundled leaf metadata when the endpoint omits limits.
+		expect(deepseek?.contextWindow).toBe(222222);
+		expect(deepseek?.maxTokens).toBe(8888);
 	});
 
 	test("shows a provider-tab hint when discovery succeeds but returns zero models", async () => {
