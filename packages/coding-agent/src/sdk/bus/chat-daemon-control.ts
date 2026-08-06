@@ -56,10 +56,12 @@ export type ChatDaemonAction = "stop" | "reload";
  * an owner serves per-request commands inside its own serving loop and answers
  * them against an exact owner tuple, so an owner at an earlier generation may
  * not serve or answer a request captured against this contract.
+ * Discord generation 27 / slack generation 26 advance the shared native
+ * ownership-authority repair across the SDK callback pump.
  */
 export const CHAT_DAEMON_GENERATIONS: Readonly<Record<ChatDaemonKind, number>> = {
-	discord: 26,
-	slack: 25,
+	discord: 27,
+	slack: 26,
 };
 
 export function chatDaemonGeneration(kind: ChatDaemonKind): number {
