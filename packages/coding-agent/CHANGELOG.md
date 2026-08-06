@@ -1,9 +1,14 @@
+# Changelog
 
 ## [Unreleased]
 
 ### Added
 
 - Added first-class `cline-pass` and `commandcode-goat` provider presets with documented API endpoints, environment-variable credentials, non-hardcoded live model discovery from models.dev and the Command Code Provider API, and prefix-based Claude routing.
+
+### Fixed
+
+- Under the default configuration (no explicit `retry.*` keys), message-only first-event stream timeouts — the wrapped `Error: Provider stream timed out while waiting for the first event`, the bare canonical form, and the per-provider `Anthropic stream timed out...` / `OpenAI responses stream timed out...` variants — were not retried once the run had observable activity (e.g. a prior tool execution in the same turn), so the turn surfaced the timeout instead of retrying like other provider non-critical errors. Content-free message-only watchdog prose is now admitted in the bare-default first-event retry gate like the typed path; visible content, conflicting structured facts, near-miss prose, extension-hook participation, Alibaba/Kimi terminal policy, and ollama-cloud bounded retry remain fail-closed.
 
 ## [0.12.15] - 2026-08-06
 
