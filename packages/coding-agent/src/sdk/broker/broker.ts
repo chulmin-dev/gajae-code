@@ -1709,6 +1709,10 @@ export class Broker {
 				worktrees: auth.worktrees,
 				...(auth.aliases ? { aliases: auth.aliases } : {}),
 			});
+			// Publish the enrollment before the first domain snapshot.  The index is
+			// the recovery root list, so this ordering leaves only a recoverable
+			// stale index entry if the process dies before the state publication.
+			await recordManagedEnrollment(this.settings.agentDir, binding.controlRoot);
 			const result = await transactManagedTaskDomain(
 				{
 					binding,
@@ -1723,7 +1727,7 @@ export class Broker {
 									} catch {
 										throw new Error("native managed evidence exists");
 									}
-									if (enrolled.controlRoots.includes(binding.controlRoot))
+									if ((enrolled.byRoot[binding.controlRoot] ?? []).length > 0)
 										throw new Error("native managed evidence exists");
 									const enrolledNatives = new Set(enrolled.nativeIdentities);
 									if (
@@ -1747,7 +1751,6 @@ export class Broker {
 						nodes: input.nodes,
 					}),
 			);
-			await recordManagedEnrollment(this.settings.agentDir, binding.controlRoot);
 			return {
 				ok: true,
 				result: {
